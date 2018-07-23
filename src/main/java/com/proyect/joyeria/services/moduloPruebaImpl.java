@@ -1,6 +1,14 @@
 package com.proyect.joyeria.services;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -11,6 +19,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
 import com.proyect.joyeria.dto.PruebDto;
@@ -90,6 +99,18 @@ public class moduloPruebaImpl  implements moduloPrueba{
 		xml.setConceptos(createConceptos(of));
 		
 		xml.setImpuestos(createImpuestos(of));
+		
+		//Extraer archivos .cer y .key
+		
+		File cer = new File("C:/Users/vgc/Desktop/COMUNICADO3.3/Kit/CertificadoFirmadoPF.cer");
+		File key = new File("C:/Users/vgc/Desktop/COMUNICADO3.3/Kit/LlavePkcs8PF.key");
+		
+		X509Certificate x509Certificate =getX509Certificate(cer);
+		String certificado= getCertificadoBase64(x509Certificate);
+		String noCertificado= getCertificadoBase64(x509Certificate);
+		
+		xml.setCertificado(certificado);
+		xml.setNoCertificado(noCertificado);
 		
 	}
 	
@@ -173,10 +194,40 @@ public class moduloPruebaImpl  implements moduloPrueba{
 		
 
 		
-		return null;
+		return impu;
 		
 	}
 	
+	//Metodos de sellado
+	
+	X509Certificate getX509Certificate(final File certificateFile) throws CertificateException,IOException{
+		FileInputStream  is = null;
+		try{
+			is = new FileInputStream(certificateFile);
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			return (X509Certificate)cf.generateCertificate(is);
+		}finally{
+			if(is != null){
+				is.close();
+			}
+		}
+		
+	}
+	
+	private String getCertificadoBase64(final X509Certificate cert ) throws CertificateEncodingException{	
+		return new String(Base64.encodeBase64(cert.getEncoded()));
+	}
+	
+	@SuppressWarnings("unused")
+	private String getNoCertificadoBase64(final X509Certificate cert ) throws CertificateEncodingException{
+		BigInteger serial= cert.getSerialNumber();
+		byte[] sArr = serial.toByteArray();
+		StringBuilder buffer = new StringBuilder();
+		for(int i=0; i<sArr.length; i++){
+			buffer.append((char)sArr[i]);
+		}
+		return buffer.toString();
+	}
 	
 
 }
