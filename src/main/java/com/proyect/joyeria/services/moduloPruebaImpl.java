@@ -112,6 +112,8 @@ public class moduloPruebaImpl  implements moduloPrueba{
 		xml.setCertificado(certificado);
 		xml.setNoCertificado(noCertificado);
 		
+		String cadxml = jaxbObkectToXML(xml);
+		
 	}
 	
 	private Emisor createEmisor(ObjectFactory of){
@@ -229,5 +231,14 @@ public class moduloPruebaImpl  implements moduloPrueba{
 		return buffer.toString();
 	}
 	
+	
+	private String jaxbObkectToXML(Comprobante xml){
+		String xmlString ="";
+
+		return null;
+		
+		
+		
+	}
 
 }
