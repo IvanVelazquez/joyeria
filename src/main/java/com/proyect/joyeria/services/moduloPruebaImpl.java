@@ -20,9 +20,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.proyect.joyeria.dto.PruebDto;
+import com.proyect.joyeria.repository.pruebaRepository;
 
 import mx.sat.cfd33.CMetodoPago;
 import mx.sat.cfd33.CMoneda;
@@ -42,20 +44,15 @@ import mx.sat.cfd33.ObjectFactory;
 
 @Service
 public class moduloPruebaImpl  implements moduloPrueba{
-	
+
+	@Autowired
+	pruebaRepository prub;
 	public Iterable<PruebDto> prueba() {
+		PruebDto p1 = new PruebDto();
 		// TODO Auto-generated method stub
 		List<PruebDto> prueb = new ArrayList<PruebDto>();
-		PruebDto pru = new PruebDto();
-		for (Integer i =0; i<=5; i++){
-			pru.setPassword("pass1");
-			pru.setUserId(i);
-			pru.setUserName("usuario"+i);
-			prueb.add(pru);
-		}
-		
-		
-		
+		prueb = prub.findByPrueba();
+
 		return prueb;
 	}
 	
